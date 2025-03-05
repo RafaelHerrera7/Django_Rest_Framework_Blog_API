@@ -49,7 +49,7 @@ class Post(models.Model):
 
     title = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
-    content = models.CharField()
+    content = models.TextField()
     thumbnail = models.ImageField(upload_to=blog_thumbnail_directory)
     
     keyword = models.CharField(max_length=128)
@@ -58,7 +58,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     
     created_at = models.DateTimeField(default=timezone.now)
-    update_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
     status = models.CharField(max_length=10, choices=status_options, default='draft')
     

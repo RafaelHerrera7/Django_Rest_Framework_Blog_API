@@ -4,12 +4,14 @@ from .models import Post, Category, Heading
 
 
 class PostSerializers(serializers.ModelSerializer):
+    
     class Meta:
         model = Post
         fields = '__all__' # Serializers all the fields
     
     
 class PostListSerializers(serializers.ModelSerializer):
+    
     class Meta:
         model = Post
         fields = [
@@ -38,6 +40,7 @@ class CategorySerializers(serializers.ModelSerializer):
         
         
 class HeadingSerializers(serializers.ModelSerializer):
+    
     class Meta:
         model = Heading
         fields = [
