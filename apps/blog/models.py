@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
+from django_ckeditor_5.fields import CKEditor5Field
 
 def blog_thumbnail_directory(instance, filename):
     return f'blog/{instance.title}/{filename}'
@@ -49,7 +50,7 @@ class Post(models.Model):
 
     title = models.CharField(max_length=128)
     description = models.CharField(max_length=256)
-    content = models.TextField()
+    content = CKEditor5Field('Text', config_name='extends')
     thumbnail = models.ImageField(upload_to=blog_thumbnail_directory)
     
     keyword = models.CharField(max_length=128)
