@@ -28,7 +28,7 @@ class Category(models.Model):
     title = models.CharField(max_length=256, blank=True, null=True)
     description = models.TextField()
     thumbnail = models.ImageField(upload_to=category_thumbnail_directory)
-    slug = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=256)
      
     def __str__(self):
         return self.name       
@@ -54,7 +54,7 @@ class Post(models.Model):
     thumbnail = models.ImageField(upload_to=blog_thumbnail_directory)
     
     keyword = models.CharField(max_length=128)
-    slug = models.CharField(max_length=128)
+    slug = models.SlugField(max_length=128)
     
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
     
@@ -77,10 +77,10 @@ class Heading(models.Model):
     
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
 
-    post = models.ForeignKey(Post, on_delete=models.PROTECT, related_name='headings')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='headings')
     
     title = models.CharField(max_length=256)
-    slug = models.CharField(max_length=256)
+    slug = models.SlugField(max_length=256, blank=True)
     level = models.IntegerField(
         choices=(
             (1, 'H1'),
