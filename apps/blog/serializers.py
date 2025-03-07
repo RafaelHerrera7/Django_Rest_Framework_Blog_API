@@ -3,29 +3,7 @@ from rest_framework import serializers
 from .models import Post, Category, Heading
 
 
-class PostSerializers(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Post
-        fields = '__all__' # Serializers all the fields
-    
-    
-class PostListSerializers(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Post
-        fields = [
-            'id',
-            'title',
-            'description',
-            'thumbnail',
-            'slug',
-            'category',
-        ]
-    
-    
 class CategorySerializers(serializers.ModelSerializer):
-    
     class Meta:
         model = Category
         fields = [
@@ -37,10 +15,9 @@ class CategorySerializers(serializers.ModelSerializer):
             'thumbnail', 
             'slug', 
         ] # Serializers only fields i want
-        
+
         
 class HeadingSerializers(serializers.ModelSerializer):
-    
     class Meta:
         model = Heading
         fields = [
@@ -49,3 +26,35 @@ class HeadingSerializers(serializers.ModelSerializer):
             'level',
             'order',
         ]
+
+
+class CategoryListSerializers(serializers.ModelSerializer):    
+    class Meta:
+        model = Category
+        fields = [
+            'name',
+            'slug',
+        ]        
+        
+
+class PostSerializers(serializers.ModelSerializer):
+    category = CategoryListSerializers()
+    headings = HeadingSerializers(many=True)
+    class Meta:
+        model = Post
+        fields = '__all__' # Serializers all the fields
+    
+    
+class PostListSerializers(serializers.ModelSerializer):
+    category = CategoryListSerializers()
+    class Meta:
+        model = Post
+        fields = [
+            'id',
+            'title',
+            'description',
+            'thumbnail',
+            'slug',
+            'category',
+        ]
+    
