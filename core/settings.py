@@ -39,7 +39,8 @@ PROJECT_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'channels',
-    'django_ckeditor_5'
+    'django_ckeditor_5',
+    'django_celery_results',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -166,6 +167,26 @@ CACHES = {
 }
 
 CHANNELLS_ALLOWED_ORIGINS = 'http://localhost:3000'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Santiago'
+
+CELERY_BROKER_URL = env('REDIS_URL')
+CELERY_BROKER_TRANSPORT_OPTIONS = {
+    'visibility_timeout': 3600,
+    'socket_timeout': 5,
+    'retry_on_timeout': True
+}
+
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE = 'default'
+
+CELERY_IMPORTS = (
+    'core.tasks',
+    'apps.blog.tasks', 
+)
 
 # Ckeditor Config docs: https://pypi.org/project/django-ckeditor-5/
 

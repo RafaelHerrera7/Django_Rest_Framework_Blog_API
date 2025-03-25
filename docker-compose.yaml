@@ -10,7 +10,8 @@ services:
       - 8000:8000
     depends_on:
       - django_redis
-
+      - django_db
+      
   # Redis
   django_redis:
     image: redis
@@ -31,4 +32,17 @@ services:
       - 5432:5432
     volumes:
       - .dbdata:/var/lib/postgresql
-    
+  
+
+  # Celery
+  celery_worked: 
+    container_name: blog_celery_worked
+    build: .
+    command: celery -A core worker --loglevel=info
+    volumes:
+      - .:/app
+    ports:
+      - 8001:8001
+    depends_on:
+      - django_redis
+      - django_db
