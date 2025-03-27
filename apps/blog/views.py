@@ -7,16 +7,14 @@ from django.conf import settings
 
 from .models import Post, Heading, PostView, PostAnalytics
 from .serializers import PostListSerializers, PostSerializers, HeadingSerializers
-from .tasks import increment_post_impressions
+from core.permissions import HasValidAPIKey
 
 redis_client = redis.StrictRedis(host=settings.REDIS_HOST, port=6379, db=0)
 
-
-# class PostListView(ListAPIView):
-#     queryset = Post.postobjects.all()
-#     serializer_class = PostListSerializers
     
 class PostListView(APIView):
+    permission_classes = [HasValidAPIKey]
+    
     def get(self, request, *args, **kwargs):
         try:
             posts = Post.postobjects.all()
@@ -33,13 +31,10 @@ class PostListView(APIView):
             raise NotFound(detail='No posts found')
         return Response(serializad_posts) 
 
-# class PostDetailView(RetrieveAPIView):
-#     queryset = Post.postobjects.all()
-#     serializer_class = PostSerializers
-#     lookup_field = 'slug'
-
       
 class PostDetailView(APIView):
+    permission_classes = [HasValidAPIKey]
+        
     def get(self, request, slug, *args, **kwargs): 
         try:
             post = Post.objects.get(slug=slug)
@@ -66,6 +61,8 @@ class PostDetailView(APIView):
 
 
 class PostHeadingsView(ListAPIView):
+    permission_classes = [HasValidAPIKey]
+    
     serializer_class = HeadingSerializers
     def get_queryset(self):
         post_slug = self.kwargs.get('slug')
@@ -73,6 +70,7 @@ class PostHeadingsView(ListAPIView):
 
 
 class IncrementPostClickView(APIView):
+    permission_classes = [HasValidAPIKey]
     
     def post(self, request, *args, **kwargs):
         '''
