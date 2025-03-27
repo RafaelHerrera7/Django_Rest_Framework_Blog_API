@@ -2,10 +2,15 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, APIException
+import redis
+from django.conf import settings
 
 from .models import Post, Heading, PostView, PostAnalytics
 from .serializers import PostListSerializers, PostSerializers, HeadingSerializers
 from .tasks import increment_post_impressions
+
+redis_client = redis.StrictRedis(host=settings.REDIS_HOST, port=6379, db=0)
+
 
 # class PostListView(ListAPIView):
 #     queryset = Post.postobjects.all()
@@ -19,11 +24,11 @@ class PostListView(APIView):
             if not posts.exists():
                 raise NotFound(detail='No posts found')
 
+            for post in posts:
+                redis_client.incr(f'post:impressions:{post.id}')
+                
             serializad_posts = PostListSerializers(posts, many=True).data
             
-            for post in posts:
-                increment_post_impressions.delay(post.id)
-                
         except Post.DoesNotExist:
             raise NotFound(detail='No posts found')
         return Response(serializad_posts) 
@@ -38,6 +43,7 @@ class PostDetailView(APIView):
     def get(self, request, slug, *args, **kwargs): 
         try:
             post = Post.objects.get(slug=slug)
+            
         except Post.DoesNotExist:
             raise NotFound(detail='The requested post does not exist')
         except Exception as e:
@@ -49,6 +55,7 @@ class PostDetailView(APIView):
         try:
             post_analytics = PostAnalytics.objects.get(post=post)
             post_analytics.incremente_view(request)
+        
         except Post.DoesNotExist:
             raise NotFound(detail='Analytics data for this post does not exists')
         except Exception as e:

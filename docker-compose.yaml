@@ -33,7 +33,6 @@ services:
     volumes:
       - .dbdata:/var/lib/postgresql
   
-
   # Celery
   celery_worked: 
     container_name: blog_celery_worked
@@ -43,6 +42,19 @@ services:
       - .:/app
     ports:
       - 8001:8001
+    depends_on:
+      - django_redis
+      - django_db
+
+  # Celery Beat 
+  celery_beat: 
+    container_name: blog_celery_beat
+    build: .
+    command: celery -A core beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/app
+    ports:
+      - 8002:8002
     depends_on:
       - django_redis
       - django_db
