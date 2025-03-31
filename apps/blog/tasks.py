@@ -5,7 +5,7 @@ import logging
 import redis
 from django.conf import settings
 
-from .models import PostAnalytics
+from .models import PostAnalytics, Post
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ redis_client = redis.StrictRedis(host=settings.REDIS_HOST, port=6379, db=0)
 @shared_task
 def increment_post_impressions(post_id):
     '''
-    Increments impression on asociates posts
+    Incrementa las impresiones de los posts
     '''
     try:
         analitycs, created = PostAnalytics.objects.get_or_create(post__id=post_id)
@@ -23,6 +23,19 @@ def increment_post_impressions(post_id):
     except Exception as e: 
         logger.info(f'Error incrementing impressions for Post ID {post_id}: {str(e)}')    
 
+@shared_task
+def increment_post_view_task(slug, ip_address):
+    '''
+    Incrementa las vistas de un post
+    '''
+    try:
+        post = Post.objects.get(slug=slug)
+        post_analytics, _ = PostAnalytics.objects.get_or_create(post=post)
+        post_analytics.incremente_view(ip_address)
+
+    except Exception as e:
+        logger.info(f'Error incrementing views for Post slug {slug}: {str(e)}')
+    
 @shared_task
 def sync_impressions_to_db():
     '''
@@ -36,10 +49,10 @@ def sync_impressions_to_db():
             impressions = int(redis_client.get(key))
             
             analitycs, created = PostAnalytics.objects.get_or_create(post__id=post_id)
-            analitycs.impressions += impressions
-            analitycs.save()
+            analitycs.increment_impression(impressions)
             
-            redis_client.delete(key )
+            redis_client.delete(key)
             
         except Exception as e:
             print(f'Error syncing impoessions for {key}: {str(e)}')
+            

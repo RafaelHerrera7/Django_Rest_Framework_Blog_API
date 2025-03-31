@@ -14,7 +14,7 @@ class CategorySerializers(serializers.ModelSerializer):
             'description',  
             'thumbnail', 
             'slug', 
-        ] # Serializers only fields i want
+        ] # Serializa los campos que quiera
 
         
 class HeadingSerializers(serializers.ModelSerializer):
@@ -26,6 +26,7 @@ class HeadingSerializers(serializers.ModelSerializer):
             'level',
             'order',
         ]
+
 
 class PostViewSerializers(serializers.ModelSerializer):
     class Meta:
@@ -54,6 +55,7 @@ class PostSerializers(serializers.ModelSerializer):
     # The serializer name and the method name need to be the same, without get_
     def get_view_count(self, obj):
         return obj.post_view.count()
+    
     
 class PostListSerializers(serializers.ModelSerializer):
     category = CategoryListSerializers()

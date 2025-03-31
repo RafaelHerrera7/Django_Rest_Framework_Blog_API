@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import Category, Post, Heading, PostAnalytics
 
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'title', 'parent', 'slug')
@@ -13,7 +14,6 @@ class CategoryAdmin(admin.ModelAdmin):
     list_editable = ('title',)
 
      
-         
 class HeadingInline(admin.TabularInline):
     model = Heading
     extra = 1
@@ -22,7 +22,6 @@ class HeadingInline(admin.TabularInline):
     ordering = ('order', )
     
 
-    
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'status', 'category', 'created_at', 'updated_at')
@@ -41,16 +40,6 @@ class PostAdmin(admin.ModelAdmin):
     )
     inlines = [HeadingInline]
     
-
-
-# @admin.register(Heading)
-# class HeadingAdmin(admin.ModelAdmin):
-#     list_display = ('title', 'post', 'level', 'order')
-#     search_fields = ('title', 'post__title')
-#     list_filter = ('level', 'post')
-#     ordering = ('post', 'order')
-#     prepopulated_fields = {'slug': ('title',)}
-#     readonly_fields = ('id',)
      
 @admin.register(PostAnalytics)
 class PostAnalyticsAdmin(admin.ModelAdmin):

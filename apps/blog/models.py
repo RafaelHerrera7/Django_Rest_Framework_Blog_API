@@ -137,14 +137,12 @@ class PostAnalytics(models.Model):
             self.save()
         
         
-    def increment_impression(self):
-        self.impressions += 1
+    def increment_impression(self, impressions=1):
+        self.impressions += impressions
         self.save()
         self._update_click_through_rate()
          
-    def incremente_view(self, request):
-        ip_address = get_client_ip(request)
-
+    def incremente_view(self, ip_address):
         if not PostView.objects.filter(post=self.post, ip_address=ip_address).exists():
             PostView.objects.create(post=self.post, ip_address=ip_address)
             
