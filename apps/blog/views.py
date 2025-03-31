@@ -56,15 +56,18 @@ class PostListView(APIView):
 class PostDetailView(APIView):
     permission_classes = [HasValidAPIKey]
 
-    def get(self, request, slug, *args, **kwargs): 
+    def get(self, request, *args, **kwargs): 
         ip_address = get_client_ip(request)    
+
+        slug = request.query_params.get('slug')
+        print(slug)
 
         try:
             # Verificar si los datos están en caché
             cached_post = cache.get(f'post_detail:{slug}')
             if cached_post:
                 # Incrementar vistas del post
-                increment_post_view_task.delay(slug, ip_address)
+                increment_post_view_task.delay(cached_post['slug'], ip_address)
                 return Response(cached_post)
             
             # Si no está en caché, obtener el post de la base de datos
